@@ -1,0 +1,155 @@
+:root {
+
+    /* Colors */
+    --color-background-main: #ECE8F5;
+    --color-background-sidebar: #252160;
+    --color-background-card: #F5F5F5;
+    --color-text-black: #272727;
+    --color-text-white: #E7E7E7;
+    --color-button: #4B41A0;
+    --color-button-hover: #6C5EAC;
+    --color-button-selected: #8C7AB8;
+    
+    /* Sizes */
+    --size-border-radius-large: 40px;
+    --size-border-radius-medium: 20px;
+    --size-border-radius-small: 10px;
+    --size-gap: 20px;
+    --size-gap-small: 10px;
+    --size-padding: 20px;
+    --size-margin: 20px;
+
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body{
+    height:100%;
+    background-color: var(--color-background-sidebar);
+}
+
+#app-layout {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+#sidebar {
+    height: 100vh;
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    padding: var(--size-gap);
+    gap: var(--size-gap)
+}
+
+#sidebar-nav {
+    gap: var(--size-gap-small);
+}
+
+.nav-link {
+    background-color: var(--color-button);
+}
+
+.nav-link:hover {
+    background-color: var(--color-button-hover);
+    transform: scale(1.05);
+}
+
+.nav-link.active {
+    background-color: var(--color-button-selected) !important;
+}
+
+.nav-link, .nav-link.active, .nav-link:hover{
+    color: var(--color-text-white);
+    border-radius: var(--size-border-radius-small) !important;
+}
+
+#content {
+    background-color: var(--color-background-main);
+    width: 100%;
+    height: 100vh;
+    border-radius: var(--size-border-radius-large) 0 0 var(--size-border-radius-large);
+    overflow-y: scroll;
+    padding: var(--size-padding);
+}
+
+.page {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-gap);
+}
+
+.input-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: var(--size-gap-small);
+    width: auto;
+}
+
+#pluviometria-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.filtro {
+    width: 100%;
+    height: 60px;
+    background-color: var(--color-background-card);
+    border-radius: var(--size-border-radius-medium);
+    padding-left: var(--size-padding);
+    padding-right: var(--size-padding);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+}
+
+#pluviometria-filtro-origem {
+    width: 175px;
+}
+
+#pluviometria-filtro-acumulado, #pluviometria-filtro-estacao {
+    width: 75px;
+}
+
+button{
+    height: 40px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-radius: var(--size-border-radius-small);
+    border: None;
+    background-color: var(--color-button);
+    color: var(--color-text-white);
+    display: flex;
+    flex-direction: row;
+    gap: var(--size-gap-small);
+    align-items: center;
+    justify-content: center;
+}
+
+#down-icon{
+    height: 60%;
+    color: var(--color-text-white);
+}
+
+button:hover{
+    background-color: var(--color-button-hover);
+    transform: scale(1.05);
+}
+
+.download-button{
+    display: flex;
+    height: 100%;
+    align-items: center;
+}
