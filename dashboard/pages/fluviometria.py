@@ -84,7 +84,7 @@ layout = html.Div(
 
 @callback(
     Output("fluviometria-download-serie", "data"),
-    Input("pluviometria-download-taxas-button", "n_clicks"),
+    Input("fluviometria-download-serie-button", "n_clicks"),
     State("fluviometria-tabs", "active_tab",),
     prevent_initial_call=True
 )
