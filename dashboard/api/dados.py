@@ -34,6 +34,13 @@ class Datalake:
         },
         'rj-cor.adm_cor_comando.ocorrencias':{
             'colunas': [
+                'bairro',
+                'data_inicio',
+                'prazo',
+                'gravidade',
+                'latitude',
+                'longitude',
+                'tipo',
             ],
             'timeout': DEFAULT_TIMEOUT
         },
@@ -322,6 +329,16 @@ class Datalake:
 
             df = df.sort_values('data_medicao').reset_index()
             df = df[['estacao', 'data_medicao', 'altura_agua']]
+        elif table == 'rj-cor.adm_cor_comando.ocorrencias':
+            df['gravidade'] = df['gravidade'].fillna('Sem_classificacao')
+            map_ = {
+                'Media': 'Média',
+                'Medio': 'Média',
+                'Alto': 'Alta',
+                'Critico': 'Alta',
+                'Baixo': 'Baixa'
+            }
+            df['gravidade'] = df['gravidade'].map(lambda x: map_.get(x, x))
         
 
         return df
