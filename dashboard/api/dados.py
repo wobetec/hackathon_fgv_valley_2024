@@ -45,7 +45,7 @@ class Datalake:
         Retorna os dados de uma tabela. Posteriormente o objetivo é que ele se conecte 
         com o bigquery e já haja uma função de tratamento para cada dado
         """
-        df = pd.read_csv(f"C:\Code\MyRepos\hackathon_fgv_valley_2024\data\{table}.csv")
+        df = pd.read_csv(f"../data/{table}.csv")
 
         # Dados de estação pluviométrica/Fluviométrica
         if table == 'rj-cor.clima_pluviometro.estacoes_alertario':
