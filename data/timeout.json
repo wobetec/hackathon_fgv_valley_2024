@@ -1,0 +1,23 @@
+{
+    "datario.adm_central_atendimento_1746.chamado": 97000,
+    "datario.dados_mestres.bairro": 97000,
+    "rj-cor.adm_cor_comando.ocorrencias": 97000,
+    "rj-cor.adm_cor_comando.procedimento_operacional_padrao": 97000,
+    "rj-cor.clima_fluviometro.lamina_agua_inea": 97000,
+    "rj-cor.clima_pluviometro.estacoes_alertario": 97000,
+    "rj-cor.clima_pluviometro.estacoes_cemaden": 97000,
+    "rj-cor.clima_pluviometro.estacoes_inea": 97000,
+    "rj-cor.clima_pluviometro.estacoes_websirene": 97000,
+    "rj-cor.clima_pluviometro.taxa_precipitacao_alertario_5min": 97000,
+    "rj-cor.clima_pluviometro.taxa_precipitacao_cemaden": 97000,
+    "rj-cor.clima_pluviometro.taxa_precipitacao_inea": 97000,
+    "rj-cor.clima_pluviometro.taxa_precipitacao_websirene": 97000,
+    "rj-cor.clima_radar.taxa_precipitacao_guaratiba": 97000,
+    "rj-cor.dados_mestres.h3_grid_res8": 97000,
+    "rj-rioaguas.dados_mestres.sub_bacias": 97000,
+    "rj-rioaguas.saneamento_drenagem.nivel_lamina_agua_via": 97000,
+    "rj-rioaguas.saneamento_drenagem.nivel_reservatorio": 97000,
+    "rj-rioaguas.saneamento_drenagem.ponto_supervisionado_alagamento": 97000,
+    "datario.clima_pluviometro.taxa_precipitacao_alertario": 97000,
+    "rj-rioaguas.saneamento_drenagem.qualidade_agua": 97000
+}
