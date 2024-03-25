@@ -147,7 +147,7 @@ layout = html.Div(
 )
 def update_estacoes(origem):
     estacoes = Datalake.get(pluviometros[pluviometros.Origem == origem]['TabelaEstacoes'].iloc[0])
-    estacoes = list(estacoes.dropna().id_estacao.unique())
+    estacoes = list(estacoes.id_estacao.unique())
     return estacoes, estacoes[0]
 
 
@@ -189,6 +189,9 @@ def update_pluviometria_main_chart(acumulado, estacao, start_date, end_date, ori
     df['data_medicao'] = pd.to_datetime(df['data_medicao'])
     df = df.dropna()
     df = df.sort_values('data_medicao')
+    
+    if df.shape[0]>20000:
+        df = df.sample(20000)
 
     if start_date is not None:
         df = df[df.data_medicao >= start_date]

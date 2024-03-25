@@ -6,6 +6,8 @@ import datetime
 import os
 import json
 from time import perf_counter
+import shutil
+
 
 MAP_BOUNDS = {"west": -43.800734, "east": -43.094862, "south": -23.088019, "north": -22.795882}
 CACHE_DIR = "./cache"
@@ -16,6 +18,12 @@ DEFAULT_TIMEOUT = 10000 * 60
 if not os.path.exists(CACHE_DIR):
     os.mkdir(CACHE_DIR)
 
+    for file in os.listdir('../data'):
+        if file.endswith('.csv') or file.endswith('.json'):
+            shutil.copyfile(
+                os.path.join('../data', file),
+                os.path.join('./cache', file),
+            )
 
 class Datalake:
 
@@ -24,6 +32,9 @@ class Datalake:
     TABLES_COLUMNS = {
         'datario.adm_central_atendimento_1746.chamado':{
             'colunas': [
+                'data_inicio',
+                'latitude',
+                'longitude',
             ],
             'timeout': DEFAULT_TIMEOUT
         },
@@ -36,6 +47,7 @@ class Datalake:
             'colunas': [
                 'bairro',
                 'data_inicio',
+                'data_particao',
                 'prazo',
                 'gravidade',
                 'latitude',
@@ -219,7 +231,7 @@ class Datalake:
 
     @classmethod
     def __get(cls, table):
-        if len(cls.TABLES_COLUMNS[table]) == 0:
+        if len(cls.TABLES_COLUMNS[table]['colunas']) == 0:
             return pd.DataFrame()
         if cls.__exists(table):
             return cls.__load(table)
@@ -272,6 +284,8 @@ class Datalake:
         elif table == 'rj-rioaguas.saneamento_drenagem.qualidade_agua':
             df = df[df['coleta'] == 'Regular']
             df['data_medicao'] = pd.to_datetime(df['data_medicao'], errors='coerce')
+            df = df[df.data_medicao <= datetime.datetime.now()]
+
             df = df.dropna(subset=['data_medicao'])
             df = df.dropna(how='all')
             colunas = list(df.columns)
@@ -310,25 +324,6 @@ class Datalake:
             df = df.set_index('data_medicao')
             df = df.resample('d').mean()
             df = df.dropna(how='all').reset_index()
-
-        elif table == 'rj-rioaguas.saneamento_drenagem.nivel_lamina_agua_via':
-            estacoes = {
-                1: "Catete",
-                2: "Bangu - Rua da Feira",
-                3: "Bangu - Rua do Açudes",
-                4: "Rio Maracanã - Visc Itamarati",
-                5: "Itanhangá",
-                6: "Bangu - Av Santa Cruz",
-                7: "Lagoa",
-                8: "Rio Maracanã - R: Uruguai",
-            }
-            df['id_estacao'] = df['primary_key'].str[0]
-            df['id_estacao'] = df['id_estacao'].astype(int)
-            df['estacao'] = df['id_estacao'].map(estacoes)
-            df['data_medicao'] = pd.to_datetime(df['data_particao'] + ' ' + df['horario'])
-
-            df = df.sort_values('data_medicao').reset_index()
-            df = df[['estacao', 'data_medicao', 'altura_agua']]
         elif table == 'rj-cor.adm_cor_comando.ocorrencias':
             df['gravidade'] = df['gravidade'].fillna('Sem_classificacao')
             map_ = {

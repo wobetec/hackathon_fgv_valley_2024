@@ -19,7 +19,6 @@ tabs = dbc.CardHeader(
     dbc.Tabs(
         [
             dbc.Tab(label="Ranking dos Bairros por Gravidade", tab_id="ranking"),
-            dbc.Tab(label="Gravidade ao Longo do Tempo", tab_id="timeline"),
             dbc.Tab(label="Distribuição de Gravidade", tab_id="map"),
         ],
         id="cor-tabs",
