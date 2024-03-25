@@ -58,4 +58,8 @@ app.layout = html.Div(
 )
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    if len(sys.argv) == 1:
+        app.run(debug=True)
+    elif sys.argv[1] == 'prod':
+        app.run(debug=False)
+
