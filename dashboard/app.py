@@ -1,19 +1,8 @@
-from dash import Dash, html, dcc, callback, Output, Input, DiskcacheManager, CeleryManager
+from dash import Dash, html, dcc
 import dash_bootstrap_components as dbc
 import dash
-import diskcache
 import os
 
-if 'REDIS_URL' in os.environ:
-    # Use Redis & Celery if REDIS_URL set as an env variable
-    from celery import Celery
-    celery_app = Celery(__name__, broker=os.environ['REDIS_URL'], backend=os.environ['REDIS_URL'])
-    background_callback_manager = CeleryManager(celery_app, expire=60*5)
-else:
-    # Diskcache for non-production apps when developing locally
-    import diskcache
-    cache = diskcache.Cache("./cache")
-    background_callback_manager = DiskcacheManager(cache, expire=60*5)
 
 app = Dash(
     __name__,
@@ -22,9 +11,7 @@ app = Dash(
     external_stylesheets=[
         dbc.themes.MATERIA,
         "https://use.fontawesome.com/releases/v6.4.2/css/all.css"
-    ],
-    background_callback_manager=background_callback_manager,
-    # suppress_callback_exceptions=True,
+    ]
 )
 
 sidebar = html.Div(

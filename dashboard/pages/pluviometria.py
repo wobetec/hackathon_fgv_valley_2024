@@ -5,6 +5,7 @@ import plotly.express as px
 from api.dados import Datalake, MAP_BOUNDS
 import dash_bootstrap_components as dbc
 import pandas as pd
+import json
 
 dash.register_page(
     __name__,
@@ -72,9 +73,9 @@ filtro = html.Div(
                 dcc.DatePickerRange(
                     id='pluviometria-filtro-data',
                     min_date_allowed=datetime.date(1995, 8, 5),
-                    max_date_allowed=datetime.date(2017, 9, 19),
-                    initial_visible_month=datetime.date(2017, 8, 5),
-                    end_date=datetime.date(2017, 8, 25)
+                    max_date_allowed=datetime.date(2100, 9, 19),
+                    initial_visible_month=datetime.datetime.today().replace(hour=23, minute=59, second=59),
+                    end_date=datetime.datetime.today().replace(hour=23, minute=59, second=59)
                 ),
             ]
         ),
@@ -140,11 +141,21 @@ layout = html.Div(
 
 
 @callback(
+    Output('pluviometria-filtro-estacao', 'options'),
+    Output('pluviometria-filtro-estacao', 'value'),
+    Input('pluviometria-filtro-origem', 'value'),
+)
+def update_estacoes(origem):
+    estacoes = Datalake.get(pluviometros[pluviometros.Origem == origem]['TabelaEstacoes'].iloc[0])
+    estacoes = list(estacoes.dropna().id_estacao.unique())
+    return estacoes, estacoes[0]
+
+
+@callback(
     Output("pluviometria-download-estacoes", "data"),
     Input("pluviometria-download-estacoes-button", "n_clicks"),
     State('pluviometria-filtro-origem', 'value'),
-    prevent_initial_call=True,
-    background=True,
+    prevent_initial_call=True
 )
 def baixar_estacoes(n_clicks, origem):
     estacoes = Datalake.get(pluviometros[pluviometros.Origem == origem]['TabelaEstacoes'].iloc[0])
@@ -155,8 +166,7 @@ def baixar_estacoes(n_clicks, origem):
     Output("pluviometria-download-taxas", "data"),
     Input("pluviometria-download-taxas-button", "n_clicks"),
     State('pluviometria-filtro-origem', 'value'),
-    prevent_initial_call=True,
-    background=True,
+    prevent_initial_call=True
 )
 def baixar_taxas(n_clicks, origem):
     taxas = Datalake.get(pluviometros[pluviometros.Origem == origem]['TabelaTaxas'].iloc[0])
@@ -165,55 +175,59 @@ def baixar_taxas(n_clicks, origem):
 
 @callback(
     Output('pluviometria-main-graph', 'figure'),
-    inputs=[
-        Input('pluviometria-filtro-origem', 'value'),
-        Input('pluviometria-filtro-acumulado', 'value'),
-    ],
-    background=True,
+    Input('pluviometria-filtro-acumulado', 'value'),
+    Input('pluviometria-filtro-estacao', 'value'),
+    Input('pluviometria-filtro-data', 'start_date'),
+    Input('pluviometria-filtro-data', 'end_date'),
+    State('pluviometria-filtro-origem', 'value')
 )
-def update_pluviometria_main_chart(origem, acumulado):
+def update_pluviometria_main_chart(acumulado, estacao, start_date, end_date, origem):
     taxas = Datalake.get(pluviometros[pluviometros.Origem == origem]['TabelaTaxas'].iloc[0])
-    estacoes = Datalake.get(pluviometros[pluviometros.Origem == origem]['TabelaEstacoes'].iloc[0])
-
-    df = pd.melt(
-        taxas, 
-        id_vars=['id_estacao', 'data_medicao'],
-        value_vars=[f'acumulado_chuva_{acumulado}min',],
-        var_name='tempo',
-        value_name='taxa',
-    )
+    
+    df = taxas[taxas.id_estacao == estacao].copy()
+    df = df.rename(columns={'acumulado_chuva_15min': 'taxa'})
     df['data_medicao'] = pd.to_datetime(df['data_medicao'])
     df = df.dropna()
     df = df.sort_values('data_medicao')
 
-    fig_graph = px.line(
-        df[df.id_estacao == 1],
-        x='data_medicao',
-        y='taxa'
-    )
+    if start_date is not None:
+        df = df[df.data_medicao >= start_date]
+    if end_date is not None:
+        df = df[df.data_medicao <= end_date]
 
-    fig_map = px.scatter_mapbox(estacoes, lat="latitude", lon='longitude', hover_name='id_estacao', zoom=5)
+    rolling = acumulado // 15
+    if rolling != 1:
+        df['taxa'] = df['taxa'].rolling(rolling).sum()
+
+    fig_graph = px.line(
+        df,
+        x='data_medicao',
+        y='taxa',
+        title='Precipitação Acumulada',
+    ).update_layout(
+        xaxis_title='Data',
+        yaxis_title='mm'
+    )
 
     fig_graph.update_layout(transition_duration=300)
-    fig_map.update_layout(
-        transition_duration=300,
-        mapbox_bounds=MAP_BOUNDS,
-        mapbox_style="open-street-map",
-        margin={"r":0,"t":0,"l":0,"b":0}
-    )
     return fig_graph
 
 @callback(
     Output('pluviometria-main-map', 'figure'),
-    inputs=[
-        Input('pluviometria-filtro-origem', 'value')
-    ],
-    background=True,
+    Input('pluviometria-filtro-origem', 'value')
 )
 def update_pluviometria_main_map(origem):
     estacoes = Datalake.get(pluviometros[pluviometros.Origem == origem]['TabelaEstacoes'].iloc[0])
+    estacoes['size'] = 20
 
-    fig_map = px.scatter_mapbox(estacoes, lat="latitude", lon='longitude', hover_name='id_estacao', zoom=5)
+    fig_map = px.scatter_mapbox(
+        estacoes,
+        lat="latitude",
+        lon='longitude',
+        hover_name='id_estacao',
+        zoom=5,
+        size='size'
+    )
     fig_map.update_layout(
         transition_duration=300,
         mapbox_bounds=MAP_BOUNDS,
