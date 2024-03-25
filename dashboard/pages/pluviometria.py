@@ -85,7 +85,8 @@ filtro = html.Div(
                         html.Img(src='./assets/images/download.svg', id='down-icon'),
                         'Taxas'
                     ],
-                    id="pluviometria-download-taxas-button"
+                    id="pluviometria-download-taxas-button",
+                    className='button-download'
                 ),
                 dcc.Download(id="pluviometria-download-taxas"),
             ],
@@ -98,7 +99,8 @@ filtro = html.Div(
                         html.Img(src='./assets/images/download.svg', id='down-icon'),
                         'Estações'
                     ],
-                    id="pluviometria-download-estacoes-button"
+                    id="pluviometria-download-estacoes-button",
+                    className='button-download'
                 ),
                 dcc.Download(id="pluviometria-download-estacoes"),
             ],
@@ -144,7 +146,7 @@ layout = html.Div(
     prevent_initial_call=True,
     background=True,
 )
-def func(n_clicks, origem):
+def baixar_estacoes(n_clicks, origem):
     estacoes = Datalake.get(pluviometros[pluviometros.Origem == origem]['TabelaEstacoes'].iloc[0])
     return dcc.send_data_frame(estacoes.to_csv, "estacoes.csv")
 
@@ -156,7 +158,7 @@ def func(n_clicks, origem):
     prevent_initial_call=True,
     background=True,
 )
-def func(n_clicks, origem):
+def baixar_taxas(n_clicks, origem):
     taxas = Datalake.get(pluviometros[pluviometros.Origem == origem]['TabelaTaxas'].iloc[0])
     return dcc.send_data_frame(taxas.to_csv, "taxas.csv")
 
